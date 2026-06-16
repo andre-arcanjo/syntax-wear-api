@@ -1,49 +1,52 @@
 // Require the framework and instantiate it
 
 // ESM
-import Fastify from 'fastify'
-import 'dotenv/config'
-import cors from '@fastify/cors';
-import helmet from '@fastify/helmet';
+import Fastify from "fastify";
+import "dotenv/config";
+import cors from "@fastify/cors";
+import helmet from "@fastify/helmet";
+import productRoutes from "./routes/products.routes";
 
-const PORT = parseInt(process.env.PORT ?? '3000');
+const PORT = parseInt(process.env.PORT ?? "3000");
 
 const fastify = Fastify({
-  logger: true
-})
+  logger: true,
+});
 
-fastify.register(cors,{
-    origin: true,
-    credentials: true,
-})
+fastify.register(cors, {
+  origin: true,
+  credentials: true,
+});
 
 fastify.register(helmet, {
-    contentSecurityPolicy: false
+  contentSecurityPolicy: false,
 });
 
 // Declare a route
-fastify.get('/', async (request, reply) => {
-    return {
-        message: 'E-commerce Syntax Wear API',
-        version: '1.0.0',
-        status: 'running',
-    }
+fastify.get("/", async (request, reply) => {
+  return {
+    message: "E-commerce Syntax Wear API",
+    version: "1.0.0",
+    status: "running",
+  };
 });
 
-fastify.get('/health', async (request, reply) => {
-    return {
-        status: 'ok',
-        timestamp: new Date().toISOString(),
-    }
+fastify.get("/health", async (request, reply) => {
+  return {
+    status: "ok",
+    timestamp: new Date().toISOString(),
+  };
 });
+
+fastify.register(productRoutes, { prefix: "/products" });
 
 // Run the server!
 fastify.listen({ port: PORT }, function (err, address) {
   if (err) {
-    fastify.log.error(err)
-    process.exit(1)
+    fastify.log.error(err);
+    process.exit(1);
   }
   // Server is now listening on ${address}
-})
+});
 
 export default fastify;
