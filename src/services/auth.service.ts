@@ -1,6 +1,6 @@
-import { RegisterRequest } from "../types";
+import { AuthRequest, RegisterRequest } from "../types";
 import { prisma } from "../utils/prisma";
-import bcrypt from "bcrypt"
+import bcrypt from "bcrypt";
 
 export const registerUser = async (payload: RegisterRequest) => {
   const existingUser = await prisma.user.findUnique({
@@ -11,7 +11,7 @@ export const registerUser = async (payload: RegisterRequest) => {
     throw new Error("Email já cadastrado.");
   }
 
-  const hashedPassword = await bcrypt.hash(payload.password, 10)
+  const hashedPassword = await bcrypt.hash(payload.password, 10);
 
   const newUser = await prisma.user.create({
     data: {
@@ -26,5 +26,23 @@ export const registerUser = async (payload: RegisterRequest) => {
     },
   });
 
-  return newUser
+  return newUser;
+};
+
+export const loginUser = async (data: AuthRequest) => {
+  const user = await prisma.user.findUnique({
+    where: { email: data.email },
+  });
+
+  if (!user) {
+    throw new Error("Usuário não encontrado.");
+  }
+
+  const isValidPassord = await bcrypt.compare(data.password, user.password);
+
+  if (!isValidPassord) {
+    throw new Error("Senha inválida.");
+  }
+
+  return user;
 };
