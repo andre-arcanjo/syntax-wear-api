@@ -15,13 +15,11 @@ export default async function authRoutes(fastify: FastifyInstance) {
             firstName: { type: "string", description: "Nome do usuário" },
             email: {
               type: "string",
-              format: "email",
               description: "Email do usuário",
             },
             lastName: { type: "string", description: "Sobrenome do usuário" },
             password: {
               type: "string",
-              minLength: 6,
               description: "Senha do usuário",
             },
             cpf: {
@@ -30,7 +28,6 @@ export default async function authRoutes(fastify: FastifyInstance) {
             },
             birthDate: {
               type: "string",
-              format: "date",
               description: "Data de nascimento do usuário (YYYY-MM-DD)",
             },
             phone: {
@@ -45,27 +42,28 @@ export default async function authRoutes(fastify: FastifyInstance) {
     register,
   );
 
-  fastify.post("/login", {
-    schema: {
-      tags: ["Auth"],
-      description: "Autentica um usuário e retorna um token JWT",
-      body: {
-        type: "object",
-        required: ["email", "password"],
-        properties: {
-          email: {
-            type: "string",
-            format: "email",
-            description: "Email do usuário"},
+  fastify.post(
+    "/login",
+    {
+      schema: {
+        tags: ["Auth"],
+        description: "Autentica um usuário e retorna um token JWT",
+        body: {
+          type: "object",
+          required: ["email", "password"],
+          properties: {
+            email: {
+              type: "string",
+              description: "Email do usuário",
+            },
             password: {
               type: "string",
-              minLength: 6,
               description: "Senha do usuário",
-            }
+            },
           },
         },
       },
     },
-    login
+    login,
   );
 }

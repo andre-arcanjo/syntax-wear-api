@@ -1,6 +1,6 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 
-export const autheticate = async (
+export const authenticate = async (
   request: FastifyRequest,
   reply: FastifyReply,
 ): Promise<void> => {
