@@ -1,5 +1,6 @@
 import { RegisterRequest } from "../types";
 import { prisma } from "../utils/prisma";
+import bcrypt from "bcrypt"
 
 export const registerUser = async (payload: RegisterRequest) => {
   const existingUser = await prisma.user.findUnique({
@@ -10,12 +11,14 @@ export const registerUser = async (payload: RegisterRequest) => {
     throw new Error("Email já cadastrado.");
   }
 
+  const hashedPassword = await bcrypt.hash(payload.password, 10)
+
   const newUser = await prisma.user.create({
     data: {
       firstName: payload.firstName,
       lastName: payload.lastName,
       email: payload.email,
-      password: payload.password,
+      password: hashedPassword,
       cpf: payload.cpf,
       birthDate: payload.dateOfBirth || undefined,
       phone: payload.phone,
