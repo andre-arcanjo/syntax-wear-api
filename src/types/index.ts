@@ -24,12 +24,21 @@ export interface RegisterRequest extends AuthRequest {
 
 export interface CreateProduct {
   name: string;
-  descripion: string;
+  description: string;
   price: number;
-  colors?: string;
-  sizes?: string;
+  colors?: string[];
+  sizes?: string[];
   slug: string;
   stock: number;
   active: boolean;
   images?: string[];
+}
+
+export interface UpdateProduct {
+  name?: string;
+  description?: string;
+  price?: number;
+  slug?: string;
+  stock?: number;
+  active?: boolean;
 }
