@@ -127,3 +127,20 @@ export const updateProduct = async (id: number, data: UpdateProduct) => {
 
   return updateProduct;
 };
+
+export const deleteProduct = async (id:number) => {
+  const existingProduct = await prisma.product.findUnique({
+    where: { id },
+  })
+
+  if (!existingProduct) {
+    throw new Error("Produto não encontrado");
+  }
+
+  const deleteProduct = await prisma.product.update({
+    where: { id },
+    data: { active: false },
+  })
+
+  return deleteProduct;
+}
