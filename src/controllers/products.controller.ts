@@ -83,5 +83,5 @@ export const deleteExistingProduct = async (
   const validate = deleteProductSchema.parse({id: Number(id)})
 
   await deleteProduct(validate.id);
-  reply.status(200).send({ message: "Produto deletado com sucesso." });
+  reply.status(204).send({ message: "Produto deletado com sucesso." });
 };

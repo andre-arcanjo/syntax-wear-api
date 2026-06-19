@@ -39,6 +39,12 @@ export const productFiltersSchema = z.object({
   sortOrder: z.enum(["asc", "desc"]).optional(),
 });
 
+export const categoryFiltersSchema = z.object({
+	page: z.coerce.number().int().min(1, "Página deve ser no mínimo 1").optional(),
+	limit: z.coerce.number().int().min(1, "Limite deve ser no mínimo 1").optional(),
+	search: z.string().optional(),
+});
+
 export const createProductSchema = z.object({
   name: z.string().min(1, "Nome é obrigatório"),
   description: z.string().min(1, "Descrição é obrigatória"),
@@ -48,7 +54,8 @@ export const createProductSchema = z.object({
   slug: z.string().min(1, "Slug é obrigatório"),
   stock: z.number().int().nonnegative("Estoque deve ser positivo").default(0),
   active: z.boolean(),
-  images: z.array(z.string()).optional()
+  images: z.array(z.string()).optional(),
+  categoryId: z.number().int().min(1, "Id de categoria inválido")
 });
 
 export const updateProductSchema = z.object({
@@ -60,7 +67,8 @@ export const updateProductSchema = z.object({
   slug: z.string().min(1, "Slug é obrigatório").optional(),
   stock: z.number().int().nonnegative("Estoque deve ser positivo").optional(),
   active: z.boolean().optional(),
-  images: z.array(z.string()).optional()
+  images: z.array(z.string()).optional(),
+  categoryId: z.number().int().min(1, "ID de categoria inválido").optional(),
 })
 
 export const deleteProductSchema = z.object({

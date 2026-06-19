@@ -12,6 +12,7 @@ import jwt from "@fastify/jwt";
 import authRoutes from "./routes/auth.routes";
 import z, { ZodError } from "zod";
 import { errorHandler } from "./middlewares/error.middleware";
+import categoryRoutes from "./routes/categories.routes";
 
 const PORT = parseInt(process.env.PORT ?? "3000");
 
@@ -67,7 +68,7 @@ fastify.register(scalar, {
 });
 
 fastify.register(productRoutes, { prefix: "/products" });
-
+fastify.register(categoryRoutes, { prefix: "/categories" });
 fastify.register(authRoutes, { prefix: "/auth" });
 
 // Declare a route
