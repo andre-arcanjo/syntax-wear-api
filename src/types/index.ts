@@ -23,10 +23,10 @@ export interface CreateCategory {
 }
 
 export interface UpdateCategory {
-    name?: string;
-    description?: string;
-    slug?: string;
-    active?: boolean;
+  name?: string;
+  description?: string;
+  slug?: string;
+  active?: boolean;
 }
 
 export interface AuthRequest {
@@ -63,4 +63,14 @@ export interface UpdateProduct extends Partial<CreateProduct> {
   slug?: string;
   stock?: number;
   active?: boolean;
+}
+
+// Order types
+export interface OrderFilters {
+  page?: number;
+  limit?: number;
+  status?: "PENDING" | "PAID" | "SHIPPED" | "DELIVERED" | "CANCELLED";
+  userId?: number;
+  startDate?: string;
+  endDate?: string;
 }
