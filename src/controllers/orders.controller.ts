@@ -6,6 +6,7 @@ import {
 } from "../utils/validator";
 import { CreateOrder, OrderFilters, UpdateOrder } from "../types";
 import {
+    cancelOrder,
   createOrder,
   getOrderById,
   getOrders,
@@ -47,4 +48,15 @@ export async function updateExistingOrder(
   const data = updateOrderSchema.parse(request.body as UpdateOrder);
   const order = await updateOrder(id, data);
   reply.status(200).send(order);
+}
+
+export async function deleteExistingOrder(
+  request: FastifyRequest<{ Params: { id: string } }>,
+  reply: FastifyReply,
+) {
+  const id = parseInt(request.params.id, 10);
+  await cancelOrder(id);
+  reply.status(200).send({
+    message: "Pedido cancelado com sucesso",
+  });
 }
