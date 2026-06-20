@@ -139,3 +139,21 @@ export const createOrderSchema = z.object({
   }),
   paymentMethod: z.string().min(1, "Método de pagamento é obrigatório"),
 });
+
+export const updateOrderSchema = z.object({
+  status: z
+    .enum(["PENDING", "PAID", "SHIPPED", "DELIVERED", "CANCELLED"])
+    .optional(),
+  shippingAddress: z
+    .object({
+      cep: z.string().regex(/^\d{8}$/, "CEP deve ter 8 dígitos"),
+      street: z.string().min(1, "Rua é obrigatória"),
+      number: z.string().min(1, "Número é obrigatório"),
+      complement: z.string().optional(),
+      neighborhood: z.string().min(1, "Bairro é obrigatório"),
+      city: z.string().min(1, "Cidade é obrigatória"),
+      state: z.string().length(2, "Estado deve ter 2 caracteres"),
+      country: z.string().default("BR"),
+    })
+    .optional(),
+});

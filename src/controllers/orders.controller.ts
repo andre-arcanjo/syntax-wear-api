@@ -1,10 +1,15 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { createOrderSchema, orderFiltersSchema } from "../utils/validator";
-import { CreateOrder, OrderFilters } from "../types";
+import {
+  createOrderSchema,
+  orderFiltersSchema,
+  updateOrderSchema,
+} from "../utils/validator";
+import { CreateOrder, OrderFilters, UpdateOrder } from "../types";
 import {
   createOrder,
   getOrderById,
   getOrders,
+  updateOrder,
 } from "../services/orders.service";
 
 export async function listOrders(request: FastifyRequest, reply: FastifyReply) {
@@ -32,4 +37,14 @@ export async function createNewOrder(
     message: "Pedido criado com sucesso",
     orderId: order.id,
   });
+}
+
+export async function updateExistingOrder(
+  request: FastifyRequest<{ Params: { id: string } }>,
+  reply: FastifyReply,
+) {
+  const id = parseInt(request.params.id, 10);
+  const data = updateOrderSchema.parse(request.body as UpdateOrder);
+  const order = await updateOrder(id, data);
+  reply.status(200).send(order);
 }

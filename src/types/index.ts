@@ -98,3 +98,8 @@ export interface CreateOrder {
   shippingAddress: ShippingAddress;
   paymentMethod: string;
 }
+
+export interface UpdateOrder {
+  status?: "PENDING" | "PAID" | "SHIPPED" | "DELIVERED" | "CANCELLED";
+  shippingAddress?: ShippingAddress;
+}
