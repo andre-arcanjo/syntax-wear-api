@@ -1,6 +1,7 @@
 import { FastifyInstance } from "fastify";
 import {
   createNewCategory,
+  deleteExistingCategory,
   getCategory,
   listCategories,
   updateExistingCategory,
@@ -270,5 +271,51 @@ export default async function categoryRoutes(fastify: FastifyInstance) {
       },
     },
     updateExistingCategory,
+  );
+
+  fastify.delete(
+    "/:id",
+    {
+      schema: {
+        tags: ["Categories"],
+        description: "Deletar uma categoria (soft delete em cascata)",
+        security: [{ bearerAuth: [] }],
+        params: {
+          type: "object",
+          properties: {
+            id: { type: "number", description: "ID da categoria" },
+          },
+          required: ["id"],
+        },
+        response: {
+          204: {
+            description: "Categoria deletada com sucesso",
+            type: "null",
+          },
+          404: {
+            description: "Categoria não encontrada",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+            },
+          },
+          401: {
+            description: "Não autorizado",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+            },
+          },
+          500: {
+            description: "Erro interno do servidor",
+            type: "object",
+            properties: {
+              message: { type: "string" },
+            },
+          },
+        },
+      },
+    },
+    deleteExistingCategory,
   );
 }
