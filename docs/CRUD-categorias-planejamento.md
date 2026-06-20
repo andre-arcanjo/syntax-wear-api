@@ -1,6 +1,6 @@
 # Planejamento: CRUD de Categorias com Vinculação a Produtos
 
-**Data:** 1 de dezembro de 2025  
+**Data:** 18 de junho de 2026  
 **Status:** Planejamento
 
 ## Objetivo
