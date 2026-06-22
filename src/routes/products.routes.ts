@@ -7,9 +7,10 @@ import {
   deleteExistingProduct,
 } from '../controllers/products.controller';
 import { authenticate } from '../middlewares/auth.middleware';
+import { requireAdmin } from '../middlewares/admin.middleware';
+import { CreateProduct } from '../types';
 
 export default async function productRoutes(fastify: FastifyInstance) {
-  fastify.addHook("onRequest", authenticate);
   fastify.get(
     '/',
     {
@@ -160,9 +161,10 @@ export default async function productRoutes(fastify: FastifyInstance) {
     getProduct,
   );
 
-  fastify.post(
+  fastify.post<{ Body: CreateProduct }>(
     '/',
     {
+      onRequest: [requireAdmin],
       schema: {
         tags: ['Products'],
         description: 'Criar um novo produto',
