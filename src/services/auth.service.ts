@@ -24,6 +24,17 @@ export const registerUser = async (payload: RegisterRequest) => {
       phone: payload.phone,
       role: 'USER',
     },
+    select: {
+      id: true,
+      firstName: true,
+      lastName: true,
+      email: true,
+      cpf: true,
+      birthDate: true,
+      phone: true,
+      role: true,
+      createdAt: true,
+    },
   });
 
   return newUser;
@@ -38,11 +49,14 @@ export const loginUser = async (data: AuthRequest) => {
     throw new Error('Usuário não encontrado.');
   }
 
-  const isValidPassord = await bcrypt.compare(data.password, user.password);
+  const isValidPassword = await bcrypt.compare(data.password, user.password);
 
-  if (!isValidPassord) {
+  if (!isValidPassword) {
     throw new Error('Senha inválida.');
   }
 
-  return user;
+  // Remover password antes de retornar
+  const { password, ...userWithoutPassword } = user;
+
+  return userWithoutPassword;
 };
