@@ -1,21 +1,27 @@
-import { FastifyReply, FastifyRequest } from 'fastify';
+import { FastifyRequest, FastifyReply } from 'fastify';
 import {
-  createOrderSchema,
   orderFiltersSchema,
+  createOrderSchema,
   updateOrderSchema,
 } from '../utils/validator';
-import { CreateOrder, OrderFilters, UpdateOrder } from '../types';
+import { OrderFilters, CreateOrder, UpdateOrder } from '../types';
 import {
-  cancelOrder,
-  createOrder,
-  getOrderById,
   getOrders,
+  getOrderById,
+  createOrder,
   updateOrder,
+  cancelOrder,
 } from '../services/orders.service';
 
 export async function listOrders(request: FastifyRequest, reply: FastifyReply) {
   const filters = orderFiltersSchema.parse(request.query as OrderFilters);
-  const orders = await getOrders(filters);
+
+  // Extrair userId e role do token JWT
+  const user = request.user as any;
+  const requestingUserId = user.userId;
+  const isAdmin = user.role === 'ADMIN';
+
+  const orders = await getOrders(filters, requestingUserId, isAdmin);
   reply.status(200).send(orders);
 }
 
@@ -24,7 +30,13 @@ export async function getOrder(
   reply: FastifyReply,
 ) {
   const id = parseInt(request.params.id, 10);
-  const order = await getOrderById(id);
+
+  // Extrair userId e role do token JWT
+  const user = request.user as any;
+  const requestingUserId = user.userId;
+  const isAdmin = user.role === 'ADMIN';
+
+  const order = await getOrderById(id, requestingUserId, isAdmin);
   reply.status(200).send(order);
 }
 
@@ -46,7 +58,13 @@ export async function updateExistingOrder(
 ) {
   const id = parseInt(request.params.id, 10);
   const data = updateOrderSchema.parse(request.body as UpdateOrder);
-  const order = await updateOrder(id, data);
+
+  // Extrair userId e role do token JWT
+  const user = request.user as any;
+  const requestingUserId = user.userId;
+  const isAdmin = user.role === 'ADMIN';
+
+  const order = await updateOrder(id, data, requestingUserId, isAdmin);
   reply.status(200).send(order);
 }
 
@@ -55,7 +73,13 @@ export async function deleteExistingOrder(
   reply: FastifyReply,
 ) {
   const id = parseInt(request.params.id, 10);
-  await cancelOrder(id);
+
+  // Extrair userId e role do token JWT
+  const user = request.user as any;
+  const requestingUserId = user.userId;
+  const isAdmin = user.role === 'ADMIN';
+
+  await cancelOrder(id, requestingUserId, isAdmin);
   reply.status(200).send({
     message: 'Pedido cancelado com sucesso',
   });

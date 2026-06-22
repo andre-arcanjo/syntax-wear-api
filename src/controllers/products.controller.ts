@@ -13,7 +13,7 @@ import {
   productFiltersSchema,
   updateProductSchema,
 } from '../utils/validator';
-import slugify from 'slugify';
+import { generateSlug } from '../utils/slug';
 
 export const listProducts = async (
   request: FastifyRequest<{ Querystring: ProductFilters }>,
@@ -38,11 +38,7 @@ export const createNewProduct = async (
 ) => {
   const body = request.body;
 
-  body.slug = slugify(body.name, {
-    lower: true,
-    strict: true,
-    locale: 'pt',
-  });
+  body.slug = generateSlug(body.name);
 
   const validate = createProductSchema.parse(body);
   await createProduct(validate);
@@ -63,11 +59,7 @@ export const updateExistingProduct = async (
   const validate = updateProductSchema.parse(body);
 
   if (validate.name) {
-    validate.slug = slugify(validate.name, {
-      lower: true,
-      strict: true,
-      locale: 'pt',
-    });
+    validate.slug = generateSlug(validate.name);
   }
 
   const product = await updateProduct(Number(id), validate);
@@ -75,7 +67,7 @@ export const updateExistingProduct = async (
 };
 
 export const deleteExistingProduct = async (
-  request: FastifyRequest<{ Params: { id: number } }>,
+  request: FastifyRequest<{ Params: { id: string } }>,
   reply: FastifyReply,
 ) => {
   const { id } = request.params;
@@ -83,5 +75,6 @@ export const deleteExistingProduct = async (
   const validate = deleteProductSchema.parse({ id: Number(id) });
 
   await deleteProduct(validate.id);
-  reply.status(204).send({ message: 'Produto deletado com sucesso.' });
+
+  reply.status(204).send();
 };

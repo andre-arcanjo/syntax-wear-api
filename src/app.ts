@@ -5,6 +5,7 @@ import Fastify, { FastifyError } from 'fastify';
 import 'dotenv/config';
 import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
+import csrf from '@fastify/csrf-protection'
 import productRoutes from './routes/products.routes';
 import swagger from '@fastify/swagger';
 import scalar from '@scalar/fastify-api-reference';
@@ -18,7 +19,22 @@ import orderRoutes from './routes/orders.routes';
 const PORT = parseInt(process.env.PORT ?? '3000');
 
 const fastify = Fastify({
-  logger: true,
+  logger: {
+    level: process.env.LOG_LEVEL || 'info',
+    serializers: {
+      req(request) {
+        return {
+          method: request.method,
+          url: request.url,
+        };
+      },
+      res(reply) {
+        return {
+          statusCode: reply.statusCode,
+        };
+      },
+    },
+  },
 });
 
 fastify.register(jwt, {
@@ -33,6 +49,10 @@ fastify.register(cors, {
 fastify.register(helmet, {
   contentSecurityPolicy: false,
 });
+
+fastify.register(csrf, {
+  cookieOpts: { signed: true }
+})
 
 fastify.register(swagger, {
   openapi: {

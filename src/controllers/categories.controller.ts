@@ -12,7 +12,7 @@ import {
   createCategorySchema,
   updateCategorySchema,
 } from '../utils/validator';
-import slugify from 'slugify';
+import { generateSlug } from '../utils/slug';
 
 export const listCategories = async (
   request: FastifyRequest<{ Querystring: CategoryFilters }>,
@@ -24,10 +24,10 @@ export const listCategories = async (
 };
 
 export const getCategory = async (
-  request: FastifyRequest<{ Params: { id: number } }>,
+  request: FastifyRequest<{ Params: { id: string } }>,
   reply: FastifyReply,
 ) => {
-  const category = await getCategoryById(request.params.id);
+  const category = await getCategoryById(Number(request.params.id));
   reply.status(200).send(category);
 };
 
@@ -37,11 +37,7 @@ export const createNewCategory = async (
 ) => {
   const body = request.body;
 
-  body.slug = slugify(body.name, {
-    lower: true,
-    strict: true,
-    locale: 'pt',
-  });
+  body.slug = generateSlug(body.name);
 
   const validate = createCategorySchema.parse(body);
   await createCategory(validate);
@@ -62,11 +58,7 @@ export const updateExistingCategory = async (
   const validate = updateCategorySchema.parse(body);
 
   if (validate.name) {
-    validate.slug = slugify(validate.name, {
-      lower: true,
-      strict: true,
-      locale: 'pt',
-    });
+    validate.slug = generateSlug(validate.name);
   }
 
   const category = await updateCategory(Number(id), validate);
@@ -74,10 +66,10 @@ export const updateExistingCategory = async (
 };
 
 export const deleteExistingCategory = async (
-  request: FastifyRequest<{ Params: { id: number } }>,
+  request: FastifyRequest<{ Params: { id: string } }>,
   reply: FastifyReply,
 ) => {
   const { id } = request.params;
-  await deleteCategory(id);
+  await deleteCategory(Number(id));
   reply.status(204).send();
 };

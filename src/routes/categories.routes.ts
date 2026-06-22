@@ -78,7 +78,7 @@ export default async function categoryRoutes(fastify: FastifyInstance) {
     listCategories,
   );
 
-  fastify.get<{ Params: { id: number } }>(
+  fastify.get<{ Params: { id: string } }>(
     '/:id',
     {
       schema: {
@@ -274,7 +274,7 @@ export default async function categoryRoutes(fastify: FastifyInstance) {
     updateExistingCategory,
   );
 
-  fastify.delete<{ Params: { id: number } }>(
+  fastify.delete<{ Params: { id: string } }>(
     '/:id',
     {
       onRequest: [requireAdmin], // Requer autenticação + role ADMIN

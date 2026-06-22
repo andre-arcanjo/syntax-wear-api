@@ -1,15 +1,16 @@
 import { FastifyInstance } from 'fastify';
 import {
-  createNewOrder,
-  deleteExistingOrder,
-  getOrder,
   listOrders,
+  getOrder,
+  createNewOrder,
   updateExistingOrder,
+  deleteExistingOrder,
 } from '../controllers/orders.controller';
 import { authenticate } from '../middlewares/auth.middleware';
 
 export default async function orderRoutes(fastify: FastifyInstance) {
-  fastify.addHook('onRequest', authenticate)
+  // Aplicar autenticação em todas as rotas de pedidos
+  fastify.addHook('onRequest', authenticate);
 
   // GET /orders - Listar pedidos com filtros
   fastify.get(
