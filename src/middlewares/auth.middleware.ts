@@ -1,4 +1,4 @@
-import { FastifyReply, FastifyRequest } from "fastify";
+import { FastifyReply, FastifyRequest } from 'fastify';
 
 export const authenticate = async (
   request: FastifyRequest,
@@ -7,6 +7,6 @@ export const authenticate = async (
   try {
     await request.jwtVerify();
   } catch (err) {
-    reply.status(401).send({ error: "Token inválido ou expirado." });
+    reply.status(401).send({ error: 'Token inválido ou expirado.' });
   }
 };

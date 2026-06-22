@@ -1,5 +1,5 @@
-import { prisma } from "../utils/prisma";
-import { CategoryFilters, CreateCategory, UpdateCategory } from "../types";
+import { prisma } from '../utils/prisma';
+import { CategoryFilters, CreateCategory, UpdateCategory } from '../types';
 
 export const getCategories = async (filters: CategoryFilters) => {
   const { search, page = 1, limit = 10 } = filters;
@@ -12,7 +12,7 @@ export const getCategories = async (filters: CategoryFilters) => {
   if (search && search.trim()) {
     where.name = {
       contains: search,
-      mode: "insensitive",
+      mode: 'insensitive',
     };
   }
 
@@ -28,7 +28,7 @@ export const getCategories = async (filters: CategoryFilters) => {
         skip,
         take,
         orderBy: {
-          name: "asc",
+          name: 'asc',
         },
       }),
       prisma.category.count({ where }),
@@ -42,7 +42,7 @@ export const getCategories = async (filters: CategoryFilters) => {
       totalPages: Math.ceil(total / limit),
     };
   } catch (error) {
-    console.error("Erro ao buscar categorias:", error);
+    console.error('Erro ao buscar categorias:', error);
     throw error;
   }
 };
@@ -53,7 +53,7 @@ export const getCategoryById = async (id: number) => {
   });
 
   if (!category) {
-    throw new Error("Categoria não encontrada");
+    throw new Error('Categoria não encontrada');
   }
 
   return category;
@@ -65,7 +65,7 @@ export const createCategory = async (data: CreateCategory) => {
   });
 
   if (existingCategory) {
-    throw new Error("Slug já existe. Escolha outro nome para a categoria.");
+    throw new Error('Slug já existe. Escolha outro nome para a categoria.');
   }
 
   const newCategory = await prisma.category.create({ data });
@@ -78,7 +78,7 @@ export const updateCategory = async (id: number, data: UpdateCategory) => {
   });
 
   if (!existingCategory) {
-    throw new Error("Categoria não encontrada");
+    throw new Error('Categoria não encontrada');
   }
 
   if (data.slug) {
@@ -87,7 +87,7 @@ export const updateCategory = async (id: number, data: UpdateCategory) => {
     });
 
     if (slugExists && slugExists.id !== id) {
-      throw new Error("Slug já existe. Escolha outro nome para a categoria.");
+      throw new Error('Slug já existe. Escolha outro nome para a categoria.');
     }
   }
 
@@ -105,7 +105,7 @@ export const deleteCategory = async (id: number) => {
   });
 
   if (!existingCategory) {
-    throw new Error("Categoria não encontrada");
+    throw new Error('Categoria não encontrada');
   }
 
   // Cascata de soft delete: desativar todos os produtos da categoria

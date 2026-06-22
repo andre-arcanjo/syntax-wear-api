@@ -1,17 +1,17 @@
-import { FastifyReply, FastifyRequest } from "fastify";
+import { FastifyReply, FastifyRequest } from 'fastify';
 import {
   createOrderSchema,
   orderFiltersSchema,
   updateOrderSchema,
-} from "../utils/validator";
-import { CreateOrder, OrderFilters, UpdateOrder } from "../types";
+} from '../utils/validator';
+import { CreateOrder, OrderFilters, UpdateOrder } from '../types';
 import {
-    cancelOrder,
+  cancelOrder,
   createOrder,
   getOrderById,
   getOrders,
   updateOrder,
-} from "../services/orders.service";
+} from '../services/orders.service';
 
 export async function listOrders(request: FastifyRequest, reply: FastifyReply) {
   const filters = orderFiltersSchema.parse(request.query as OrderFilters);
@@ -35,7 +35,7 @@ export async function createNewOrder(
   const data = createOrderSchema.parse(request.body as CreateOrder);
   const order = await createOrder(data);
   reply.status(201).send({
-    message: "Pedido criado com sucesso",
+    message: 'Pedido criado com sucesso',
     orderId: order.id,
   });
 }
@@ -57,6 +57,6 @@ export async function deleteExistingOrder(
   const id = parseInt(request.params.id, 10);
   await cancelOrder(id);
   reply.status(200).send({
-    message: "Pedido cancelado com sucesso",
+    message: 'Pedido cancelado com sucesso',
   });
 }

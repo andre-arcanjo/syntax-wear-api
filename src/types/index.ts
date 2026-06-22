@@ -5,8 +5,8 @@ export interface ProductFilters {
   maxPrice?: number;
   search?: string;
   categoryId?: number;
-  sortBy?: "price" | "name" | "createdAt";
-  sortOrder?: "asc" | "desc";
+  sortBy?: 'price' | 'name' | 'createdAt';
+  sortOrder?: 'asc' | 'desc';
 }
 
 export interface CategoryFilters {
@@ -40,7 +40,7 @@ export interface RegisterRequest extends AuthRequest {
   cpf?: string;
   dateOfBirth?: string;
   phone?: string;
-  role?: "USER" | "ADMIN";
+  role?: 'USER' | 'ADMIN';
 }
 
 export interface CreateProduct {
@@ -69,7 +69,7 @@ export interface UpdateProduct extends Partial<CreateProduct> {
 export interface OrderFilters {
   page?: number;
   limit?: number;
-  status?: "PENDING" | "PAID" | "SHIPPED" | "DELIVERED" | "CANCELLED";
+  status?: 'PENDING' | 'PAID' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
   userId?: number;
   startDate?: string;
   endDate?: string;
@@ -100,6 +100,6 @@ export interface CreateOrder {
 }
 
 export interface UpdateOrder {
-  status?: "PENDING" | "PAID" | "SHIPPED" | "DELIVERED" | "CANCELLED";
+  status?: 'PENDING' | 'PAID' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
   shippingAddress?: ShippingAddress;
 }

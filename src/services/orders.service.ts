@@ -1,5 +1,5 @@
-import { CreateOrder, OrderFilters, UpdateOrder } from "../types";
-import { prisma } from "../utils/prisma";
+import { CreateOrder, OrderFilters, UpdateOrder } from '../types';
+import { prisma } from '../utils/prisma';
 
 export async function getOrders(filters: OrderFilters = {}) {
   const page = filters.page || 1;
@@ -31,7 +31,7 @@ export async function getOrders(filters: OrderFilters = {}) {
       where,
       skip,
       take: limit,
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: 'desc' },
       include: {
         user: {
           select: {
@@ -91,7 +91,7 @@ export async function getOrderById(id: number) {
   });
 
   if (!order) {
-    throw new Error("Pedido não encontrado");
+    throw new Error('Pedido não encontrado');
   }
 
   return order;
@@ -110,7 +110,7 @@ export async function createOrder(data: CreateOrder) {
     const foundIds = products.map((p) => p.id);
     const missingIds = productIds.filter((id) => !foundIds.includes(id));
     throw new Error(
-      `Produto(s) com ID ${missingIds.join(", ")} não encontrado(s)`,
+      `Produto(s) com ID ${missingIds.join(', ')} não encontrado(s)`,
     );
   }
 
@@ -159,7 +159,7 @@ export async function createOrder(data: CreateOrder) {
       data: {
         userId: data.userId,
         total: calculatedTotal,
-        status: "PENDING",
+        status: 'PENDING',
         shippingAddress: data.shippingAddress as any,
         paymentMethod: data.paymentMethod,
       },
@@ -204,7 +204,7 @@ export async function updateOrder(id: number, data: UpdateOrder) {
   });
 
   if (!existingOrder) {
-    throw new Error("Pedido não encontrado");
+    throw new Error('Pedido não encontrado');
   }
 
   // Atualizar pedido
@@ -247,23 +247,23 @@ export async function cancelOrder(id: number) {
   });
 
   if (!existingOrder) {
-    throw new Error("Pedido não encontrado");
+    throw new Error('Pedido não encontrado');
   }
 
   // Verificar se pedido já foi cancelado
-  if (existingOrder.status === "CANCELLED") {
-    throw new Error("Pedido já está cancelado");
+  if (existingOrder.status === 'CANCELLED') {
+    throw new Error('Pedido já está cancelado');
   }
 
   // Verificar se pedido já foi entregue
-  if (existingOrder.status === "DELIVERED") {
-    throw new Error("Não é possível cancelar um pedido já entregue");
+  if (existingOrder.status === 'DELIVERED') {
+    throw new Error('Não é possível cancelar um pedido já entregue');
   }
 
   // Atualizar status para CANCELLED (sem reversão de estoque)
   const cancelledOrder = await prisma.order.update({
     where: { id },
-    data: { status: "CANCELLED" },
+    data: { status: 'CANCELLED' },
     include: {
       user: {
         select: {

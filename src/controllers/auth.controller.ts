@@ -1,7 +1,7 @@
-import { FastifyReply, FastifyRequest } from "fastify";
-import { loginUser, registerUser } from "../services/auth.service";
-import { AuthRequest, RegisterRequest } from "../types";
-import { loginSchema, registerSchema } from "../utils/validator";
+import { FastifyReply, FastifyRequest } from 'fastify';
+import { loginUser, registerUser } from '../services/auth.service';
+import { AuthRequest, RegisterRequest } from '../types';
+import { loginSchema, registerSchema } from '../utils/validator';
 
 export const register = async (
   request: FastifyRequest,

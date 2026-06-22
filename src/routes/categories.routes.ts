@@ -1,76 +1,76 @@
-import { FastifyInstance } from "fastify";
+import { FastifyInstance } from 'fastify';
 import {
   createNewCategory,
   deleteExistingCategory,
   getCategory,
   listCategories,
   updateExistingCategory,
-} from "../controllers/categories.controller";
-import { authenticate } from "../middlewares/auth.middleware";
+} from '../controllers/categories.controller';
+import { authenticate } from '../middlewares/auth.middleware';
 
 export default async function categoryRoutes(fastify: FastifyInstance) {
-  //fastify.addHook("onRequest", authenticate);
+  fastify.addHook('onRequest', authenticate);
 
   fastify.get(
-    "/",
+    '/',
     {
       schema: {
-        tags: ["Categories"],
-        description: "Lista categorias com filtros opcionais",
+        tags: ['Categories'],
+        description: 'Lista categorias com filtros opcionais',
         security: [{ bearerAuth: [] }],
         querystring: {
-          type: "object",
+          type: 'object',
           properties: {
-            page: { type: "number", description: "Número da página" },
-            limit: { type: "number", description: "Itens por página" },
-            search: { type: "string", description: "Busca por nome" },
+            page: { type: 'number', description: 'Número da página' },
+            limit: { type: 'number', description: 'Itens por página' },
+            search: { type: 'string', description: 'Busca por nome' },
           },
         },
         response: {
           200: {
-            description: "Lista de categorias",
-            type: "object",
+            description: 'Lista de categorias',
+            type: 'object',
             properties: {
               data: {
-                type: "array",
+                type: 'array',
                 items: {
-                  type: "object",
+                  type: 'object',
                   properties: {
-                    id: { type: "number" },
-                    name: { type: "string" },
-                    slug: { type: "string" },
-                    description: { type: "string", nullable: true },
-                    active: { type: "boolean" },
-                    createdAt: { type: "string", format: "date-time" },
-                    updatedAt: { type: "string", format: "date-time" },
+                    id: { type: 'number' },
+                    name: { type: 'string' },
+                    slug: { type: 'string' },
+                    description: { type: 'string', nullable: true },
+                    active: { type: 'boolean' },
+                    createdAt: { type: 'string', format: 'date-time' },
+                    updatedAt: { type: 'string', format: 'date-time' },
                   },
                 },
               },
-              total: { type: "number" },
-              page: { type: "number" },
-              limit: { type: "number" },
-              totalPages: { type: "number" },
+              total: { type: 'number' },
+              page: { type: 'number' },
+              limit: { type: 'number' },
+              totalPages: { type: 'number' },
             },
           },
           400: {
-            description: "Requisição inválida",
-            type: "object",
+            description: 'Requisição inválida',
+            type: 'object',
             properties: {
-              message: { type: "string" },
+              message: { type: 'string' },
             },
           },
           401: {
-            description: "Não autorizado",
-            type: "object",
+            description: 'Não autorizado',
+            type: 'object',
             properties: {
-              message: { type: "string" },
+              message: { type: 'string' },
             },
           },
           500: {
-            description: "Erro interno do servidor",
-            type: "object",
+            description: 'Erro interno do servidor',
+            type: 'object',
             properties: {
-              message: { type: "string" },
+              message: { type: 'string' },
             },
           },
         },
@@ -80,59 +80,59 @@ export default async function categoryRoutes(fastify: FastifyInstance) {
   );
 
   fastify.get(
-    "/:id",
+    '/:id',
     {
       schema: {
-        tags: ["Categories"],
-        description: "Obter uma categoria pelo ID",
+        tags: ['Categories'],
+        description: 'Obter uma categoria pelo ID',
         security: [{ bearerAuth: [] }],
         params: {
-          type: "object",
+          type: 'object',
           properties: {
-            id: { type: "number", description: "ID da categoria" },
+            id: { type: 'number', description: 'ID da categoria' },
           },
-          required: ["id"],
+          required: ['id'],
         },
         response: {
           200: {
-            description: "Categoria encontrada",
-            type: "object",
+            description: 'Categoria encontrada',
+            type: 'object',
             properties: {
-              id: { type: "number" },
-              name: { type: "string" },
-              slug: { type: "string" },
-              description: { type: "string", nullable: true },
-              active: { type: "boolean" },
-              createdAt: { type: "string", format: "date-time" },
-              updatedAt: { type: "string", format: "date-time" },
+              id: { type: 'number' },
+              name: { type: 'string' },
+              slug: { type: 'string' },
+              description: { type: 'string', nullable: true },
+              active: { type: 'boolean' },
+              createdAt: { type: 'string', format: 'date-time' },
+              updatedAt: { type: 'string', format: 'date-time' },
             },
           },
           400: {
-            description: "Requisição inválida",
-            type: "object",
+            description: 'Requisição inválida',
+            type: 'object',
             properties: {
-              message: { type: "string" },
+              message: { type: 'string' },
             },
           },
           401: {
-            description: "Não autorizado",
-            type: "object",
+            description: 'Não autorizado',
+            type: 'object',
             properties: {
-              message: { type: "string" },
+              message: { type: 'string' },
             },
           },
           404: {
-            description: "Categoria não encontrada",
-            type: "object",
+            description: 'Categoria não encontrada',
+            type: 'object',
             properties: {
-              message: { type: "string" },
+              message: { type: 'string' },
             },
           },
           500: {
-            description: "Erro interno do servidor",
-            type: "object",
+            description: 'Erro interno do servidor',
+            type: 'object',
             properties: {
-              message: { type: "string" },
+              message: { type: 'string' },
             },
           },
         },
@@ -142,56 +142,56 @@ export default async function categoryRoutes(fastify: FastifyInstance) {
   );
 
   fastify.post(
-    "/",
+    '/',
     {
       schema: {
-        tags: ["Categories"],
-        description: "Criar uma nova categoria",
+        tags: ['Categories'],
+        description: 'Criar uma nova categoria',
         security: [{ bearerAuth: [] }],
         body: {
-          type: "object",
-          required: ["name"],
+          type: 'object',
+          required: ['name'],
           properties: {
-            name: { type: "string", description: "Nome da categoria" },
+            name: { type: 'string', description: 'Nome da categoria' },
             description: {
-              type: "string",
-              description: "Descrição da categoria",
+              type: 'string',
+              description: 'Descrição da categoria',
             },
             active: {
-              type: "boolean",
-              description: "Categoria ativa",
+              type: 'boolean',
+              description: 'Categoria ativa',
               default: true,
             },
           },
         },
         response: {
           201: {
-            description: "Categoria criada com sucesso",
-            type: "object",
+            description: 'Categoria criada com sucesso',
+            type: 'object',
             properties: {
-              message: { type: "string" },
+              message: { type: 'string' },
             },
           },
           400: {
-            description: "Erro de validação",
-            type: "object",
+            description: 'Erro de validação',
+            type: 'object',
             properties: {
-              message: { type: "string" },
-              errors: { type: "object" },
+              message: { type: 'string' },
+              errors: { type: 'object' },
             },
           },
           401: {
-            description: "Não autorizado",
-            type: "object",
+            description: 'Não autorizado',
+            type: 'object',
             properties: {
-              message: { type: "string" },
+              message: { type: 'string' },
             },
           },
           500: {
-            description: "Erro interno do servidor",
-            type: "object",
+            description: 'Erro interno do servidor',
+            type: 'object',
             properties: {
-              message: { type: "string" },
+              message: { type: 'string' },
             },
           },
         },
@@ -201,70 +201,70 @@ export default async function categoryRoutes(fastify: FastifyInstance) {
   );
 
   fastify.put(
-    "/:id",
+    '/:id',
     {
       schema: {
-        tags: ["Categories"],
-        description: "Atualizar categoria",
+        tags: ['Categories'],
+        description: 'Atualizar categoria',
         security: [{ bearerAuth: [] }],
         params: {
-          type: "object",
+          type: 'object',
           properties: {
-            id: { type: "string", description: "ID da categoria" },
+            id: { type: 'string', description: 'ID da categoria' },
           },
-          required: ["id"],
+          required: ['id'],
         },
         body: {
-          type: "object",
+          type: 'object',
           properties: {
-            name: { type: "string", description: "Nome da categoria" },
+            name: { type: 'string', description: 'Nome da categoria' },
             description: {
-              type: "string",
-              description: "Descrição da categoria",
+              type: 'string',
+              description: 'Descrição da categoria',
             },
-            active: { type: "boolean", description: "Categoria ativa" },
+            active: { type: 'boolean', description: 'Categoria ativa' },
           },
         },
         response: {
           200: {
-            description: "Categoria atualizada",
-            type: "object",
+            description: 'Categoria atualizada',
+            type: 'object',
             properties: {
-              id: { type: "number" },
-              name: { type: "string" },
-              slug: { type: "string" },
-              description: { type: "string", nullable: true },
-              active: { type: "boolean" },
-              createdAt: { type: "string", format: "date-time" },
-              updatedAt: { type: "string", format: "date-time" },
+              id: { type: 'number' },
+              name: { type: 'string' },
+              slug: { type: 'string' },
+              description: { type: 'string', nullable: true },
+              active: { type: 'boolean' },
+              createdAt: { type: 'string', format: 'date-time' },
+              updatedAt: { type: 'string', format: 'date-time' },
             },
           },
           400: {
-            description: "Erro de validação",
-            type: "object",
+            description: 'Erro de validação',
+            type: 'object',
             properties: {
-              message: { type: "string" },
+              message: { type: 'string' },
             },
           },
           404: {
-            description: "Categoria não encontrada",
-            type: "object",
+            description: 'Categoria não encontrada',
+            type: 'object',
             properties: {
-              message: { type: "string" },
+              message: { type: 'string' },
             },
           },
           401: {
-            description: "Não autorizado",
-            type: "object",
+            description: 'Não autorizado',
+            type: 'object',
             properties: {
-              message: { type: "string" },
+              message: { type: 'string' },
             },
           },
           500: {
-            description: "Erro interno do servidor",
-            type: "object",
+            description: 'Erro interno do servidor',
+            type: 'object',
             properties: {
-              message: { type: "string" },
+              message: { type: 'string' },
             },
           },
         },
@@ -274,43 +274,43 @@ export default async function categoryRoutes(fastify: FastifyInstance) {
   );
 
   fastify.delete(
-    "/:id",
+    '/:id',
     {
       schema: {
-        tags: ["Categories"],
-        description: "Deletar uma categoria (soft delete em cascata)",
+        tags: ['Categories'],
+        description: 'Deletar uma categoria (soft delete em cascata)',
         security: [{ bearerAuth: [] }],
         params: {
-          type: "object",
+          type: 'object',
           properties: {
-            id: { type: "number", description: "ID da categoria" },
+            id: { type: 'number', description: 'ID da categoria' },
           },
-          required: ["id"],
+          required: ['id'],
         },
         response: {
           204: {
-            description: "Categoria deletada com sucesso",
-            type: "null",
+            description: 'Categoria deletada com sucesso',
+            type: 'null',
           },
           404: {
-            description: "Categoria não encontrada",
-            type: "object",
+            description: 'Categoria não encontrada',
+            type: 'object',
             properties: {
-              message: { type: "string" },
+              message: { type: 'string' },
             },
           },
           401: {
-            description: "Não autorizado",
-            type: "object",
+            description: 'Não autorizado',
+            type: 'object',
             properties: {
-              message: { type: "string" },
+              message: { type: 'string' },
             },
           },
           500: {
-            description: "Erro interno do servidor",
-            type: "object",
+            description: 'Erro interno do servidor',
+            type: 'object',
             properties: {
-              message: { type: "string" },
+              message: { type: 'string' },
             },
           },
         },
