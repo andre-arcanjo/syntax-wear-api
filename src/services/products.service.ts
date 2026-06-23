@@ -108,6 +108,17 @@ export const createProduct = async (data: CreateProduct) => {
     throw new Error('Slug já existe. Escolha outro nome para o produto.');
   }
 
+  // Validar se categoria existe
+  if (data.categoryId) {
+    const category = await prisma.category.findUnique({
+      where: { id: data.categoryId },
+    });
+
+    if (!category) {
+      throw new Error('Categoria não encontrada.');
+    }
+  }
+
   const newProduct = await prisma.product.create({ data });
   return newProduct;
 };
