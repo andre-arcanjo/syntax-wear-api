@@ -5,6 +5,7 @@ import Fastify, { FastifyInstance } from 'fastify';
 import 'dotenv/config';
 import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
+import rateLimit from '@fastify/rate-limit';
 import productRoutes from './routes/products.routes';
 import categoryRoutes from './routes/categories.routes';
 import orderRoutes from './routes/orders.routes';
@@ -41,13 +42,32 @@ export async function buildApp(): Promise<FastifyInstance> {
     secret: process.env.JWT_SECRET!,
   });
 
+  // Configurar CORS com whitelist de origens permitidas
+  const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [
+    'http://localhost:3000',
+    'http://localhost:5173',
+  ];
+  
   fastify.register(cors, {
-    origin: true,
+    origin: allowedOrigins,
     credentials: true,
   });
 
   fastify.register(helmet, {
-    contentSecurityPolicy: false,
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        scriptSrc: ["'self'"],
+        imgSrc: ["'self'", 'data:', 'https:'],
+      },
+    },
+  });
+
+  // Rate limiting para proteção contra brute force
+  fastify.register(rateLimit, {
+    max: 100,
+    timeWindow: '15 minutes',
   });
 
   fastify.register(swagger, {

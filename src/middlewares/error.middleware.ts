@@ -22,7 +22,8 @@ export const errorHandler = (
     });
   }
 
+  // Não expor detalhes do erro em produção
   return reply
     .status(500)
-    .send({ message: 'Erro interno do servidor', debug: error.message });
+    .send({ message: 'Erro interno do servidor' });
 };

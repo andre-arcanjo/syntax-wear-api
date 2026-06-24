@@ -1,10 +1,12 @@
 import { FastifyInstance } from 'fastify';
 import { login, register } from '../controllers/auth.controller';
+import { authRateLimit } from '../middlewares/rate-limit.middleware';
 
 export default async function authRoutes(fastify: FastifyInstance) {
   fastify.post(
     '/register',
     {
+      preHandler: authRateLimit,
       schema: {
         tags: ['Auth'],
         description: 'Registra um novo usuário e retorna um token JWT',
@@ -45,6 +47,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
   fastify.post(
     '/login',
     {
+      preHandler: authRateLimit,
       schema: {
         tags: ['Auth'],
         description: 'Autentica um usuário e retorna um token JWT',
