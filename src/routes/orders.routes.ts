@@ -205,6 +205,16 @@ export default async function orderRoutes(fastify: FastifyInstance) {
               },
             },
           },
+          400: {
+          type: 'object',
+          properties: {
+            message: { type: 'string' },
+            errors: {
+                type: 'object',
+                additionalProperties: true,
+              },
+          }
+          },
           404: {
             type: 'object',
             properties: {
@@ -296,6 +306,10 @@ export default async function orderRoutes(fastify: FastifyInstance) {
             type: 'object',
             properties: {
               message: { type: 'string' },
+              errors: {
+                type: 'object',
+                additionalProperties: true,
+              },
             },
           },
           404: {
@@ -361,6 +375,16 @@ export default async function orderRoutes(fastify: FastifyInstance) {
               paymentMethod: { type: 'string' },
               createdAt: { type: 'string', format: 'date-time' },
               updatedAt: { type: 'string', format: 'date-time' },
+            },
+          },
+          400: {
+            type: 'object',
+            properties: {
+              message: { type: 'string' },
+              errors: {
+                type: 'object',
+                additionalProperties: true,
+              },
             },
           },
           404: {

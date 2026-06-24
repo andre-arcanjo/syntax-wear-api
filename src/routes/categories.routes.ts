@@ -56,6 +56,10 @@ export default async function categoryRoutes(fastify: FastifyInstance) {
             type: 'object',
             properties: {
               message: { type: 'string' },
+              errors: {
+                type: 'object',
+                additionalProperties: true,
+              },
             },
           },
           401: {
@@ -111,6 +115,10 @@ export default async function categoryRoutes(fastify: FastifyInstance) {
             type: 'object',
             properties: {
               message: { type: 'string' },
+              errors: {
+                type: 'object',
+                additionalProperties: true,
+              },
             },
           },
           401: {
@@ -177,7 +185,10 @@ export default async function categoryRoutes(fastify: FastifyInstance) {
             type: 'object',
             properties: {
               message: { type: 'string' },
-              errors: { type: 'object' },
+              errors: {
+                type: 'object',
+                additionalProperties: true,
+              },
             },
           },
           401: {
@@ -245,6 +256,10 @@ export default async function categoryRoutes(fastify: FastifyInstance) {
             type: 'object',
             properties: {
               message: { type: 'string' },
+              errors: {
+                type: 'object',
+                additionalProperties: true,
+              },
             },
           },
           404: {

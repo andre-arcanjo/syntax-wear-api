@@ -4,21 +4,14 @@ import { AuthRequest, RegisterRequest } from '../types';
 import { loginSchema, registerSchema } from '../utils/validator';
 
 export const register = async (
-  request: FastifyRequest<{ Body: RegisterRequest }>,
+  request: FastifyRequest,
   reply: FastifyReply,
 ) => {
   // Lógica de registro de usuário
 
-  const validation = registerSchema.safeParse(request.body);
+  const validation = registerSchema.parse(request.body as RegisterRequest);
 
-  if (!validation.success) {
-  return reply.status(400).send({
-  message: 'Erro de validação',
-  errors: validation.error.flatten(),
-});
-}
-
-  const user = await registerUser(validation.data);
+  const user = await registerUser(validation);
 
   const token = request.server.jwt.sign({ userId: user.id });
 

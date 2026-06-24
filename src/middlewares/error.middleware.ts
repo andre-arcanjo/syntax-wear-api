@@ -8,12 +8,14 @@ export const errorHandler = (
 ) => {
   if (error instanceof ZodError) {
     return reply.status(400).send({
+      
       message: 'Erro de validação(zod)',
       errors: z.treeifyError(error),
     });
   }
 
   if (error.code === 'FST_ERR_VALIDATION') {
+    console.log(error.validation);
     return reply.status(400).send({
       message: 'Erro de validação(fastify)',
       errors: error.validation,

@@ -63,6 +63,10 @@ export default async function productRoutes(fastify: FastifyInstance) {
             type: 'object',
             properties: {
               message: { type: 'string' },
+              errors: {
+                type: 'object',
+                additionalProperties: true,
+              },
             },
           },
           401: {
@@ -214,7 +218,10 @@ export default async function productRoutes(fastify: FastifyInstance) {
             type: 'object',
             properties: {
               message: { type: 'string' },
-              errors: { type: 'object' },
+              errors: {
+                type: 'object',
+                additionalProperties: true,
+              },
             },
           },
           500: {
@@ -287,8 +294,10 @@ export default async function productRoutes(fastify: FastifyInstance) {
             description: 'Erro de validação',
             type: 'object',
             properties: {
-              error: { type: 'string' },
-              details: { type: 'array', nullable: true },
+              errors: {
+                type: 'object',
+                additionalProperties: true,
+              },
             },
           },
           404: {
@@ -335,6 +344,10 @@ export default async function productRoutes(fastify: FastifyInstance) {
             type: 'object',
             properties: {
               message: { type: 'string' },
+              errors: {
+                type: 'object',
+                additionalProperties: true,
+              },
             },
           },
           500: {
