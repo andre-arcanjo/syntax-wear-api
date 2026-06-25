@@ -8,7 +8,6 @@ export const errorHandler = (
 ) => {
   if (error instanceof ZodError) {
     return reply.status(400).send({
-      
       message: 'Erro de validação(zod)',
       errors: z.treeifyError(error),
     });
