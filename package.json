@@ -28,6 +28,7 @@
   },
   "homepage": "https://github.com/andre-arcanjo/syntax-wear-api#readme",
   "dependencies": {
+    "@fastify/cookie": "^11.0.2",
     "@fastify/cors": "^11.2.0",
     "@fastify/csrf-protection": "^8.0.0",
     "@fastify/helmet": "^13.0.2",
