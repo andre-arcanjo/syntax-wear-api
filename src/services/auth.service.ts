@@ -4,13 +4,24 @@ import { prisma } from '../utils/prisma';
 import bcrypt from 'bcrypt';
 import { OAuth2Client } from 'google-auth-library';
 
-export const registerUser = async (payload: RegisterRequest) => {
-  const existingUser = await prisma.user.findUnique({
-    where: { email: payload.email },
+export const registerUser = async (
+  payload: RegisterRequest,
+  reply: FastifyReply,
+) => {
+  const existingUser = await prisma.user.findFirst({
+    where: {
+      OR: [{ email: payload.email }, { cpf: payload.cpf }],
+    },
   });
 
   if (existingUser) {
-    throw new Error('Email já cadastrado.');
+    if(existingUser.email === payload.email) {
+    return reply.status(409).send({ message: 'E-mail já cadastrado' });
+    }
+
+    if(existingUser.cpf === payload.cpf) {
+    return reply.status(409).send({ message: 'CPF já cadastrado' });
+    }
   }
 
   const hashedPassword = await bcrypt.hash(payload.password, 10);
@@ -22,9 +33,7 @@ export const registerUser = async (payload: RegisterRequest) => {
       email: payload.email,
       password: hashedPassword,
       cpf: payload.cpf,
-      birthDate: payload.birthDate
-        ? new Date(payload.birthDate + 'T00:00:00')
-        : null,
+      birthDate: payload.birthDate ? new Date(payload.birthDate) : null,
       phone: payload.phone,
       role: 'USER',
     },
@@ -71,7 +80,7 @@ const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 export const loginWithGoogle = async (
   credential: string,
-  reply: FastifyReply
+  reply: FastifyReply,
 ) => {
   const ticket = await googleClient.verifyIdToken({
     idToken: credential,
@@ -82,7 +91,7 @@ export const loginWithGoogle = async (
 
   if (!payload || !payload.email) {
     // 401 Unauthorized
-    reply.status(401).send({ message: "Token do Google inválido" });
+    reply.status(401).send({ message: 'Token do Google inválido' });
     return;
   }
 
@@ -93,11 +102,11 @@ export const loginWithGoogle = async (
   if (!user) {
     user = await prisma.user.create({
       data: {
-        firstName: given_name || "",
-        lastName: family_name || "",
+        firstName: given_name || '',
+        lastName: family_name || '',
         email,
-        password: "", // Senha vazia, pois o login é via Google
-        role: "USER",
+        password: '', // Senha vazia, pois o login é via Google
+        role: 'USER',
       },
     });
   }
