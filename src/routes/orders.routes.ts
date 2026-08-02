@@ -255,7 +255,7 @@ export default async function orderRoutes(fastify: FastifyInstance) {
                   quantity: { type: 'number', description: 'Quantidade' },
                   size: {
                     type: 'string',
-                    description: 'Tamanho (obrigatório se produto tiver sizes)',
+                    description: 'Tamanho do produto (opcional)',
                   },
                 },
               },

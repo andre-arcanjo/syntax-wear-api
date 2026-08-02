@@ -1042,14 +1042,14 @@ describe("Orders CRUD - GET endpoints", () => {
 			expect(response.statusCode).toBeGreaterThanOrEqual(400);
 		});
 
-		it("deve retornar erro ao criar pedido sem size quando produto requer", async () => {
+		it("deve criar pedido sem size mesmo quando produto possui tamanhos", async () => {
 			const orderData = {
 				userId: 2,
 				items: [
 					{
 						productId: 1,
 						quantity: 1,
-						// size não informado, mas produto tem sizes
+						// size é opcional
 					},
 				],
 				shippingAddress: {
@@ -1065,6 +1065,19 @@ describe("Orders CRUD - GET endpoints", () => {
 			};
 
 			vi.mocked(prisma.product.findMany).mockResolvedValueOnce([mockProduct] as any);
+			vi.mocked(prisma.$transaction).mockImplementation(async (callback: any) => {
+				return callback({
+					order: {
+						create: vi.fn().mockResolvedValue({ id: 100 }),
+					},
+					orderItem: {
+						create: vi.fn().mockResolvedValue({ id: 1, size: null }),
+					},
+					product: {
+						update: vi.fn().mockResolvedValue(mockProduct),
+					},
+				});
+			});
 
 			const response = await app.inject({
 				method: "POST",
@@ -1075,7 +1088,7 @@ describe("Orders CRUD - GET endpoints", () => {
 				payload: orderData,
 			});
 
-			expect(response.statusCode).toBeGreaterThanOrEqual(400);
+			expect(response.statusCode).toBe(201);
 		});
 
 		it("deve retornar erro ao criar pedido com size inválido", async () => {

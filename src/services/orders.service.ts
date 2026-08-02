@@ -133,17 +133,12 @@ export async function createOrder(data: CreateOrder) {
       );
     }
 
-    // Verificar se produto tem sizes e se size foi informado
+    // Validar o tamanho somente quando ele for informado
     const productSizes = (product.sizes as any) || [];
-    if (productSizes.length > 0) {
-      if (!item.size) {
-        throw new Error(`Produto ${product.name} requer seleção de tamanho`);
-      }
-      if (!productSizes.includes(item.size)) {
-        throw new Error(
-          `Tamanho ${item.size} não disponível para ${product.name}`,
-        );
-      }
+    if (item.size && !productSizes.includes(item.size)) {
+      throw new Error(
+        `Tamanho ${item.size} não disponível para ${product.name}`,
+      );
     }
 
     // Calcular total (usar preço atual do produto como snapshot)

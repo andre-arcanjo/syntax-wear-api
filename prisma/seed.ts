@@ -267,7 +267,6 @@ async function main() {
           neighborhood: 'Bela Vista',
           city: 'São Paulo',
           state: 'SP',
-          country: 'BR',
         },
         paymentMethod: 'credit_card',
         items: {
@@ -301,7 +300,6 @@ async function main() {
           neighborhood: 'Centro',
           city: 'Rio de Janeiro',
           state: 'RJ',
-          country: 'BR',
         },
         paymentMethod: 'pix',
         items: {
@@ -342,7 +340,6 @@ async function main() {
           neighborhood: 'Bela Vista',
           city: 'São Paulo',
           state: 'SP',
-          country: 'BR',
         },
         paymentMethod: 'boleto',
         items: {
