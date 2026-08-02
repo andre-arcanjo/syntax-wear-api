@@ -281,11 +281,6 @@ export default async function orderRoutes(fastify: FastifyInstance) {
                 neighborhood: { type: 'string', description: 'Bairro' },
                 city: { type: 'string', description: 'Cidade' },
                 state: { type: 'string', description: 'Estado (UF)' },
-                country: {
-                  type: 'string',
-                  default: 'BR',
-                  description: 'País (padrão: BR)',
-                },
               },
             },
             paymentMethod: {
@@ -358,7 +353,6 @@ export default async function orderRoutes(fastify: FastifyInstance) {
                 neighborhood: { type: 'string' },
                 city: { type: 'string' },
                 state: { type: 'string' },
-                country: { type: 'string', default: 'BR' },
               },
             },
           },

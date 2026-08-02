@@ -83,7 +83,6 @@ export interface ShippingAddress {
   neighborhood: string;
   city: string;
   state: string;
-  country: string;
 }
 
 export interface CreateOrderItem {
