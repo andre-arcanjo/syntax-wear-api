@@ -54,7 +54,7 @@ export const login = async (
 };
 
 export const profile = async (request: FastifyRequest, reply: FastifyReply) =>
-  reply.send(request.user);
+  reply.send({ user: request.user });
 
 export const googleLogin = async (
   request: FastifyRequest<{ Body: { credential: string } }>,
