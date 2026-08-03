@@ -21,12 +21,26 @@ interface AuthenticatedUser {
 export async function listOrders(request: FastifyRequest, reply: FastifyReply) {
   const filters = orderFiltersSchema.parse(request.query as OrderFilters);
 
-  // Extrair userId e role do token JWT
   const user = request.user as AuthenticatedUser;
-  const requestingUserId = user.id;
-  const isAdmin = user.role === 'ADMIN';
 
-  const orders = await getOrders(filters, requestingUserId, isAdmin);
+  if (user.role !== 'ADMIN') {
+    return reply.status(403).send({
+      message: 'Acesso negado. Requer permissão de administrador.',
+    });
+  }
+
+  const orders = await getOrders(filters, user.id, true);
+  reply.status(200).send(orders);
+}
+
+export async function listMyOrders(
+  request: FastifyRequest,
+  reply: FastifyReply,
+) {
+  const filters = orderFiltersSchema.parse(request.query as OrderFilters);
+  const user = request.user as AuthenticatedUser;
+
+  const orders = await getOrders(filters, user.id, false);
   reply.status(200).send(orders);
 }
 

@@ -324,7 +324,7 @@ describe("Orders CRUD - GET endpoints", () => {
 
 			const response = await app.inject({
 				method: "GET",
-				url: "/orders",
+				url: "/orders/me",
 				headers: {
 					authorization: `Bearer ${userToken}`,
 				},

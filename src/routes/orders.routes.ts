@@ -1,6 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import {
   listOrders,
+  listMyOrders,
   getOrder,
   createNewOrder,
   updateExistingOrder,
@@ -125,6 +126,32 @@ export default async function orderRoutes(fastify: FastifyInstance) {
       },
     },
     listOrders,
+  );
+
+  // GET /orders/me - Listar somente os pedidos do usuário autenticado
+  fastify.get(
+    '/me',
+    {
+      schema: {
+        tags: ['Orders'],
+        description: 'Listar os pedidos do usuário autenticado',
+        security: [{ bearerAuth: [] }],
+        querystring: {
+          type: 'object',
+          properties: {
+            page: { type: 'number', minimum: 1 },
+            limit: { type: 'number', minimum: 1 },
+            status: {
+              type: 'string',
+              enum: ['PENDING', 'PAID', 'SHIPPED', 'DELIVERED', 'CANCELLED'],
+            },
+            startDate: { type: 'string', format: 'date-time' },
+            endDate: { type: 'string', format: 'date-time' },
+          },
+        },
+      },
+    },
+    listMyOrders,
   );
 
   // GET /orders/:id - Obter pedido por ID
