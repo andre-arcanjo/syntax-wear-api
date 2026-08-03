@@ -40,6 +40,20 @@ export async function getOrders(
       skip,
       take: limit,
       orderBy: { createdAt: 'desc' },
+      include: {
+        items: {
+          include: {
+            product: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+                images: true,
+              },
+            },
+          },
+        },
+      },
     }),
     prisma.order.count({ where }),
   ]);

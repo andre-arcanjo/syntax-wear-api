@@ -13,12 +13,17 @@ import {
   cancelOrder,
 } from '../services/orders.service';
 
+interface AuthenticatedUser {
+  id: number;
+  role: 'USER' | 'ADMIN';
+}
+
 export async function listOrders(request: FastifyRequest, reply: FastifyReply) {
   const filters = orderFiltersSchema.parse(request.query as OrderFilters);
 
   // Extrair userId e role do token JWT
-  const user = request.user as any;
-  const requestingUserId = user.userId;
+  const user = request.user as AuthenticatedUser;
+  const requestingUserId = user.id;
   const isAdmin = user.role === 'ADMIN';
 
   const orders = await getOrders(filters, requestingUserId, isAdmin);
@@ -32,8 +37,8 @@ export async function getOrder(
   const id = parseInt(request.params.id, 10);
 
   // Extrair userId e role do token JWT
-  const user = request.user as any;
-  const requestingUserId = user.userId;
+  const user = request.user as AuthenticatedUser;
+  const requestingUserId = user.id;
   const isAdmin = user.role === 'ADMIN';
 
   const order = await getOrderById(id, requestingUserId, isAdmin);
@@ -45,7 +50,8 @@ export async function createNewOrder(
   reply: FastifyReply,
 ) {
   const data = createOrderSchema.parse(request.body as CreateOrder);
-  const order = await createOrder(data);
+  const user = request.user as AuthenticatedUser;
+  const order = await createOrder({ ...data, userId: user.id });
   reply.status(201).send({
     message: 'Pedido criado com sucesso',
     orderId: order.id,
@@ -60,8 +66,8 @@ export async function updateExistingOrder(
   const data = updateOrderSchema.parse(request.body as UpdateOrder);
 
   // Extrair userId e role do token JWT
-  const user = request.user as any;
-  const requestingUserId = user.userId;
+  const user = request.user as AuthenticatedUser;
+  const requestingUserId = user.id;
   const isAdmin = user.role === 'ADMIN';
 
   const order = await updateOrder(id, data, requestingUserId, isAdmin);
@@ -75,8 +81,8 @@ export async function deleteExistingOrder(
   const id = parseInt(request.params.id, 10);
 
   // Extrair userId e role do token JWT
-  const user = request.user as any;
-  const requestingUserId = user.userId;
+  const user = request.user as AuthenticatedUser;
+  const requestingUserId = user.id;
   const isAdmin = user.role === 'ADMIN';
 
   await cancelOrder(id, requestingUserId, isAdmin);
