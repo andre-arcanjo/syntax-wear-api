@@ -69,6 +69,9 @@ export async function createNewOrder(
   reply.status(201).send({
     message: 'Pedido criado com sucesso',
     orderId: order.id,
+    subtotal: order.subtotal,
+    shippingCost: order.shippingCost,
+    total: order.total,
   });
 }
 

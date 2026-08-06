@@ -1,6 +1,7 @@
 import { OrderStatus } from '@prisma/client';
 import { OrderFilters, CreateOrder, UpdateOrder } from '../types';
 import { prisma } from '../utils/prisma';
+import { calculateShippingCost } from './shipping.service';
 
 const allowedStatusTransitions: Record<OrderStatus, OrderStatus[]> = {
   PENDING: ['PAID', 'CANCELLED'],
@@ -155,7 +156,7 @@ export async function createOrder(
   const productMap = new Map(products.map((p) => [p.id, p]));
 
   // 4. Validações e cálculo de total
-  let calculatedTotal = 0;
+  let subtotal = 0;
 
   for (const item of data.items) {
     const product = productMap.get(item.productId)!;
@@ -181,8 +182,11 @@ export async function createOrder(
     }
 
     // Calcular total (usar preço atual do produto como snapshot)
-    calculatedTotal += Number(product.price) * item.quantity;
+    subtotal += Number(product.price) * item.quantity;
   }
+
+  const shippingCost = calculateShippingCost(data.shippingAddress.state);
+  const total = subtotal + shippingCost;
 
   // 5. Criar pedido com transação atômica
   const order = await prisma.$transaction(async (tx) => {
@@ -190,7 +194,9 @@ export async function createOrder(
     const newOrder = await tx.order.create({
       data: {
         userId: authenticatedUserId,
-        total: calculatedTotal,
+        subtotal,
+        shippingCost,
+        total,
         status: 'PENDING',
         shippingAddress: data.shippingAddress as any,
         paymentMethod: data.paymentMethod,

@@ -70,6 +70,8 @@ model Order {
   id              Int         @id @default(autoincrement())
   userId          Int?
   user            User?       @relation(fields: [userId], references: [id])
+  subtotal        Decimal
+  shippingCost    Decimal
   total           Decimal
   status          OrderStatus @default(PENDING)
   shippingAddress Json

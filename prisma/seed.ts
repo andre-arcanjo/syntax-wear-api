@@ -257,7 +257,9 @@ async function main() {
     const order1 = await prisma.order.create({
       data: {
         userId: user1.id,
-        total: 109.98, // 2x Classic Tee (29.99 cada) + 1x Sport Shorts (24.00) + frete estimado 26.00
+        subtotal: 83.98,
+        shippingCost: 14.90,
+        total: 98.88,
         status: 'PAID',
         shippingAddress: {
           cep: '01310100',
@@ -291,7 +293,9 @@ async function main() {
     const order2 = await prisma.order.create({
       data: {
         userId: user2.id,
-        total: 229.89, // 1x Vintage Hoodie (59.90) + 1x Running Shoes (119.99) + 1x Summer Dress (49.00) + frete estimado 1.00
+        subtotal: 228.89,
+        shippingCost: 14.90,
+        total: 243.79,
         status: 'SHIPPED',
         shippingAddress: {
           cep: '20040020',
@@ -330,7 +334,9 @@ async function main() {
     const order3 = await prisma.order.create({
       data: {
         userId: user1.id,
-        total: 79.50, // 1x Slim Jeans (79.50)
+        subtotal: 79.50,
+        shippingCost: 14.90,
+        total: 94.40,
         status: 'PENDING',
         shippingAddress: {
           cep: '01310100',
@@ -358,7 +364,9 @@ async function main() {
     // Guest order (sem userId)
     const order4 = await prisma.order.create({
       data: {
-        total: 179.97, // 3x Classic Tee (29.99 cada) + frete estimado 90.00
+        subtotal: 89.97,
+        shippingCost: 14.90,
+        total: 104.87,
         status: 'DELIVERED',
         shippingAddress: {
           cep: '30130100',

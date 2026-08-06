@@ -64,6 +64,8 @@ export default async function orderRoutes(fastify: FastifyInstance) {
                   properties: {
                     id: { type: 'number' },
                     userId: { type: 'number', nullable: true },
+                    subtotal: { type: 'number' },
+                    shippingCost: { type: 'number' },
                     total: { type: 'number' },
                     status: { type: 'string' },
                     shippingAddress: { type: 'object' },
@@ -175,6 +177,8 @@ export default async function orderRoutes(fastify: FastifyInstance) {
             properties: {
               id: { type: 'number' },
               userId: { type: 'number', nullable: true },
+              subtotal: { type: 'number' },
+              shippingCost: { type: 'number' },
               total: { type: 'number' },
               status: { type: 'string' },
               shippingAddress: { type: 'object' },
@@ -318,6 +322,9 @@ export default async function orderRoutes(fastify: FastifyInstance) {
             properties: {
               message: { type: 'string' },
               orderId: { type: 'number' },
+              subtotal: { type: 'number' },
+              shippingCost: { type: 'number' },
+              total: { type: 'number' },
             },
           },
           400: {
@@ -386,6 +393,8 @@ export default async function orderRoutes(fastify: FastifyInstance) {
             properties: {
               id: { type: 'number' },
               userId: { type: 'number', nullable: true },
+              subtotal: { type: 'number' },
+              shippingCost: { type: 'number' },
               total: { type: 'number' },
               status: { type: 'string' },
               shippingAddress: { type: 'object' },

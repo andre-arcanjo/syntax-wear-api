@@ -8,6 +8,7 @@ import helmet from '@fastify/helmet';
 import productRoutes from './routes/products.routes';
 import categoryRoutes from './routes/categories.routes';
 import orderRoutes from './routes/orders.routes';
+import shippingRoutes from './routes/shipping.routes';
 import swagger from '@fastify/swagger';
 import scalar from '@scalar/fastify-api-reference';
 import jwt from '@fastify/jwt';
@@ -90,6 +91,7 @@ export async function buildApp(): Promise<FastifyInstance> {
   fastify.register(productRoutes, { prefix: '/products' });
   fastify.register(categoryRoutes, { prefix: '/categories' });
   fastify.register(orderRoutes, { prefix: '/orders' });
+  fastify.register(shippingRoutes, { prefix: '/shipping' });
   fastify.register(authRoutes, { prefix: '/auth' });
 
   // Declare a route
