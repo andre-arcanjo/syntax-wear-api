@@ -128,7 +128,6 @@ export const createOrderItemSchema = z.object({
 });
 
 export const createOrderSchema = z.object({
-  userId: z.number().int().optional(),
   items: z
     .array(createOrderItemSchema)
     .min(1, 'Pedido deve ter pelo menos um item'),

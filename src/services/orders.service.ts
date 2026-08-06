@@ -1,5 +1,27 @@
+import { OrderStatus } from '@prisma/client';
 import { OrderFilters, CreateOrder, UpdateOrder } from '../types';
 import { prisma } from '../utils/prisma';
+
+const allowedStatusTransitions: Record<OrderStatus, OrderStatus[]> = {
+  PENDING: ['PAID', 'CANCELLED'],
+  PAID: ['SHIPPED', 'CANCELLED'],
+  SHIPPED: ['DELIVERED'],
+  DELIVERED: [],
+  CANCELLED: [],
+};
+
+function validateStatusTransition(
+  currentStatus: OrderStatus,
+  nextStatus: OrderStatus,
+) {
+  if (currentStatus === nextStatus) return;
+
+  if (!allowedStatusTransitions[currentStatus].includes(nextStatus)) {
+    throw new Error(
+      `Transição de status inválida: ${currentStatus} para ${nextStatus}`,
+    );
+  }
+}
 
 export async function getOrders(
   filters: OrderFilters = {},
@@ -109,7 +131,10 @@ export async function getOrderById(
   return order;
 }
 
-export async function createOrder(data: CreateOrder) {
+export async function createOrder(
+  data: CreateOrder,
+  authenticatedUserId: number,
+) {
   // 1. Buscar todos os produtos para validação
   const productIds = data.items.map((item) => item.productId);
   const products = await prisma.product.findMany({
@@ -164,7 +189,7 @@ export async function createOrder(data: CreateOrder) {
     // 5.1 Criar Order
     const newOrder = await tx.order.create({
       data: {
-        userId: data.userId,
+        userId: authenticatedUserId,
         total: calculatedTotal,
         status: 'PENDING',
         shippingAddress: data.shippingAddress as any,
@@ -224,6 +249,15 @@ export async function updateOrder(
     throw new Error('Você não tem permissão para atualizar este pedido');
   }
 
+  // Usuários podem ajustar o próprio endereço, mas não o status do pedido.
+  if (!isAdmin && data.status) {
+    throw new Error('Somente administradores podem alterar o status do pedido');
+  }
+
+  if (data.status) {
+    validateStatusTransition(existingOrder.status, data.status);
+  }
+
   // Atualizar pedido
   const updatedOrder = await prisma.order.update({
     where: { id },
@@ -276,15 +310,7 @@ export async function cancelOrder(
     throw new Error('Você não tem permissão para cancelar este pedido');
   }
 
-  // Verificar se pedido já foi cancelado
-  if (existingOrder.status === 'CANCELLED') {
-    throw new Error('Pedido já está cancelado');
-  }
-
-  // Verificar se pedido já foi entregue
-  if (existingOrder.status === 'DELIVERED') {
-    throw new Error('Não é possível cancelar um pedido já entregue');
-  }
+  validateStatusTransition(existingOrder.status, 'CANCELLED');
 
   // Atualizar status para CANCELLED (sem reversão de estoque)
   const cancelledOrder = await prisma.order.update({

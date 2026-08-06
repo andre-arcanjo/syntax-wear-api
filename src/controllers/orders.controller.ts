@@ -65,7 +65,7 @@ export async function createNewOrder(
 ) {
   const data = createOrderSchema.parse(request.body as CreateOrder);
   const user = request.user as AuthenticatedUser;
-  const order = await createOrder({ ...data, userId: user.id });
+  const order = await createOrder(data, user.id);
   reply.status(201).send({
     message: 'Pedido criado com sucesso',
     orderId: order.id,

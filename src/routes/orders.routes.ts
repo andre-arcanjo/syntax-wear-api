@@ -267,10 +267,6 @@ export default async function orderRoutes(fastify: FastifyInstance) {
           type: 'object',
           required: ['items', 'shippingAddress', 'paymentMethod'],
           properties: {
-            userId: {
-              type: 'number',
-              description: 'ID do usuário (opcional para guest checkout)',
-            },
             items: {
               type: 'array',
               minItems: 1,

@@ -92,7 +92,6 @@ export interface CreateOrderItem {
 }
 
 export interface CreateOrder {
-  userId?: number;
   items: CreateOrderItem[];
   shippingAddress: ShippingAddress;
   paymentMethod: string;
