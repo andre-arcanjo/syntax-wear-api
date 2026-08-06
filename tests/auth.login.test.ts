@@ -51,10 +51,10 @@ describe("Auth Routes - Login", () => {
 
 		const body = JSON.parse(response.body);
 
-		// Verifica se retornou token
-		expect(body).toHaveProperty("token");
-		expect(typeof body.token).toBe("string");
-		expect(body.token.length).toBeGreaterThan(0);
+		// O token não é exposto no body; ele é enviado em cookie HTTP-only.
+		expect(body).not.toHaveProperty("token");
+		expect(response.headers["set-cookie"]).toContain("syntaxwear.token=");
+		expect(response.headers["set-cookie"]).toContain("HttpOnly");
 
 		// Verifica se retornou os dados do usuário
 		expect(body).toHaveProperty("user");

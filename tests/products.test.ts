@@ -108,7 +108,7 @@ describe("Products CRUD", () => {
 		};
 
 		// Mock para register: verifica se email existe
-		vi.mocked(prisma.user.findUnique).mockResolvedValueOnce(null);
+		vi.mocked(prisma.user.findFirst).mockResolvedValueOnce(null);
 		
 		// Mock para criar usuário no register
 		vi.mocked(prisma.user.create).mockResolvedValueOnce({
@@ -153,7 +153,7 @@ describe("Products CRUD", () => {
 		});
 
 		expect(loginResponse.statusCode).toBe(200);
-		adminToken = JSON.parse(loginResponse.body).token;
+		adminToken = app.jwt.sign({ userId: mockAdminUser.id });
 
 		// Mock permanente para verificação de token no middleware
 		vi.mocked(prisma.user.findUnique).mockResolvedValue(mockAdminUser as any);

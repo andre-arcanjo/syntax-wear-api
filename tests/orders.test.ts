@@ -145,7 +145,7 @@ describe("Orders CRUD - GET endpoints", () => {
 		};
 
 		// ===== Registro e login do ADMIN =====
-		vi.mocked(prisma.user.findUnique).mockResolvedValueOnce(null);
+		vi.mocked(prisma.user.findFirst).mockResolvedValueOnce(null);
 		vi.mocked(prisma.user.create).mockResolvedValueOnce({
 			...mockAdminUser,
 			role: "USER" as const,
@@ -180,10 +180,10 @@ describe("Orders CRUD - GET endpoints", () => {
 		});
 
 		expect(adminLoginResponse.statusCode).toBe(200);
-		adminToken = JSON.parse(adminLoginResponse.body).token;
+		adminToken = app.jwt.sign({ userId: mockAdminUser.id });
 
 		// ===== Registro e login do USER =====
-		vi.mocked(prisma.user.findUnique).mockResolvedValueOnce(null);
+		vi.mocked(prisma.user.findFirst).mockResolvedValueOnce(null);
 		vi.mocked(prisma.user.create).mockResolvedValueOnce(mockRegularUser as any);
 
 		await app.inject({
@@ -209,7 +209,7 @@ describe("Orders CRUD - GET endpoints", () => {
 		});
 
 		expect(userLoginResponse.statusCode).toBe(200);
-		userToken = JSON.parse(userLoginResponse.body).token;
+		userToken = app.jwt.sign({ userId: mockRegularUser.id });
 
 		// Mock permanente para verificação de token
 		vi.mocked(prisma.user.findUnique).mockImplementation((args: any) => {
@@ -231,6 +231,27 @@ describe("Orders CRUD - GET endpoints", () => {
 
 	afterAll(async () => {
 		await app.close();
+	});
+
+	describe("GET /shipping/:state - Calcular frete", () => {
+		it("deve retornar o frete calculado no backend para uma UF válida", async () => {
+			const response = await app.inject({
+				method: "GET",
+				url: "/shipping/SP",
+			});
+
+			expect(response.statusCode).toBe(200);
+			expect(JSON.parse(response.body)).toEqual({ shippingCost: 14.9 });
+		});
+
+		it("deve rejeitar uma UF sem tarifa configurada", async () => {
+			const response = await app.inject({
+				method: "GET",
+				url: "/shipping/XX",
+			});
+
+			expect(response.statusCode).toBeGreaterThanOrEqual(400);
+		});
 	});
 
 	describe("GET /orders - Listar pedidos", () => {
@@ -661,9 +682,9 @@ describe("Orders CRUD - GET endpoints", () => {
 	});
 
 	describe("POST /orders - Criar pedido", () => {
-		it("deve criar um novo pedido com sucesso (usuário autenticado)", async () => {
+		it("deve criar um pedido com o usuário autenticado e valores calculados no backend", async () => {
 			const orderData = {
-				userId: 2,
+				userId: 999,
 				items: [
 					{
 						productId: 1,
@@ -687,7 +708,9 @@ describe("Orders CRUD - GET endpoints", () => {
 			const mockCreatedOrder = {
 				id: 100,
 				userId: 2,
-				total: 199.98,
+				subtotal: 199.98,
+				shippingCost: 14.9,
+				total: 214.88,
 				status: "PENDING",
 				shippingAddress: orderData.shippingAddress,
 				paymentMethod: orderData.paymentMethod,
@@ -699,10 +722,11 @@ describe("Orders CRUD - GET endpoints", () => {
 			vi.mocked(prisma.product.findMany).mockResolvedValueOnce([mockProduct] as any);
 
 			// Mock da transação
+			const orderCreate = vi.fn().mockResolvedValue(mockCreatedOrder);
 			vi.mocked(prisma.$transaction).mockImplementation(async (callback: any) => {
 				return callback({
 					order: {
-						create: vi.fn().mockResolvedValue(mockCreatedOrder),
+						create: orderCreate,
 					},
 					orderItem: {
 						create: vi.fn().mockResolvedValue({
@@ -737,9 +761,22 @@ describe("Orders CRUD - GET endpoints", () => {
 			const body = JSON.parse(response.body);
 			expect(body).toHaveProperty("message");
 			expect(body.message).toBe("Pedido criado com sucesso");
+			expect(Number(body.subtotal)).toBe(199.98);
+			expect(Number(body.shippingCost)).toBe(14.9);
+			expect(Number(body.total)).toBe(214.88);
+			expect(orderCreate).toHaveBeenCalledWith(
+				expect.objectContaining({
+					data: expect.objectContaining({
+						userId: mockRegularUser.id,
+						subtotal: 199.98,
+						shippingCost: 14.9,
+						total: 214.88,
+					}),
+				}),
+			);
 		});
 
-		it("deve criar pedido sem userId (guest checkout)", async () => {
+		it("deve criar pedido sem userId no body usando o usuário autenticado", async () => {
 			const orderData = {
 				items: [
 					{
@@ -762,8 +799,10 @@ describe("Orders CRUD - GET endpoints", () => {
 
 			const mockCreatedOrder = {
 				id: 101,
-				userId: null,
-				total: 99.99,
+				userId: 2,
+				subtotal: 99.99,
+				shippingCost: 14.9,
+				total: 114.89,
 				status: "PENDING",
 				shippingAddress: orderData.shippingAddress,
 				paymentMethod: orderData.paymentMethod,
@@ -1407,7 +1446,7 @@ describe("Orders CRUD - GET endpoints", () => {
 			expect(updateCall).toBeDefined();
 		});
 
-		it("deve permitir usuário atualizar seu próprio pedido", async () => {
+		it("deve impedir usuário comum de alterar o status do próprio pedido", async () => {
 			const mockOrder = {
 				id: 202,
 				userId: 2,
@@ -1427,20 +1466,12 @@ describe("Orders CRUD - GET endpoints", () => {
 				updatedAt: new Date(),
 			};
 
-			const mockUpdatedOrder = {
-				...mockOrder,
-				status: "CANCELLED",
-				updatedAt: new Date(),
-				user: mockRegularUser,
-				items: [],
-			};
-
 			const updateData = {
 				status: "CANCELLED",
 			};
 
 			vi.mocked(prisma.order.findUnique).mockResolvedValueOnce(mockOrder as any);
-			vi.mocked(prisma.order.update).mockResolvedValueOnce(mockUpdatedOrder as any);
+			vi.mocked(prisma.order.update).mockClear();
 
 			const response = await app.inject({
 				method: "PUT",
@@ -1451,10 +1482,8 @@ describe("Orders CRUD - GET endpoints", () => {
 				payload: updateData,
 			});
 
-			expect(response.statusCode).toBe(200);
-
-			const body = JSON.parse(response.body);
-			expect(body.status).toBe("CANCELLED");
+			expect(response.statusCode).toBeGreaterThanOrEqual(400);
+			expect(prisma.order.update).not.toHaveBeenCalled();
 		});
 
 		it("deve retornar erro ao usuário tentar atualizar pedido de outro", async () => {
