@@ -101,3 +101,7 @@ export interface UpdateOrder {
   status?: 'PENDING' | 'PAID' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
   shippingAddress?: ShippingAddress;
 }
+
+export interface RegisterEmailNewsletter {
+  email: string
+}

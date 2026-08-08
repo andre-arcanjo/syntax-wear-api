@@ -92,3 +92,8 @@ model OrderItem {
   size      String?
   createdAt DateTime @default(now())
 }
+
+model Newsletter {
+  id Int @id @default(autoincrement())
+  email String @unique
+}

@@ -15,6 +15,7 @@ import jwt from '@fastify/jwt';
 import authRoutes from './routes/auth.routes';
 import { errorHandler } from './middlewares/error.middleware';
 import fastifyCookie from '@fastify/cookie';
+import newsletterRoutes from './routes/newsletter.routes';
 
 const PORT = parseInt(process.env.PORT ?? '3000');
 
@@ -93,6 +94,7 @@ export async function buildApp(): Promise<FastifyInstance> {
   fastify.register(orderRoutes, { prefix: '/orders' });
   fastify.register(shippingRoutes, { prefix: '/shipping' });
   fastify.register(authRoutes, { prefix: '/auth' });
+  fastify.register(newsletterRoutes, { prefix: '/newsletter' });
 
   // Declare a route
   fastify.get('/', async (request, reply) => {

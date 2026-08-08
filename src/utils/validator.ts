@@ -161,3 +161,7 @@ export const updateOrderSchema = z.object({
     })
     .optional(),
 });
+
+export const registerEmailNewsletterSchema = z.object({
+  email: z.email('Email inválido').trim().toLowerCase(),
+});
